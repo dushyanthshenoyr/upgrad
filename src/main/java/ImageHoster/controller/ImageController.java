@@ -100,15 +100,15 @@ public class ImageController {
         Image image = imageService.getImage(imageId);
         String error = "Only the owner of the image can edit the image";
 
-
-
-
         String tags = convertTagsToString(image.getTags());
-        model.addAttribute("image", image);
-        model.addAttribute("tags", tags);
+
+
+
 
         if (matchUsers(image.getUser(),session)){
 
+            model.addAttribute("image", image);
+            model.addAttribute("tags", tags);
             return "images/edit";
 
         }
@@ -163,9 +163,25 @@ public class ImageController {
     //The method calls the deleteImage() method in the business logic passing the id of the image to be deleted
     //Looks for a controller method with request mapping of type '/images'
     @RequestMapping(value = "/deleteImage", method = RequestMethod.DELETE)
-    public String deleteImageSubmit(@RequestParam(name = "imageId") Integer imageId) {
-        imageService.deleteImage(imageId);
-        return "redirect:/images";
+    public String deleteImageSubmit(@RequestParam(name = "imageId") Integer imageId, Model model, HttpSession session,final RedirectAttributes redirectAttributes) {
+        String error = "Only the owner of the image can delete the image";
+        Image image = imageService.getImage(imageId);
+
+        if (matchUsers(image.getUser(),session)){
+
+            imageService.deleteImage(imageId);
+            return "redirect:/images";
+        }
+        else{
+
+            redirectAttributes.addAttribute("deleteError", error);
+            model.addAttribute("deleteError", error);
+            redirectAttributes.addFlashAttribute("deleteError", error);
+            return "redirect:/images/" + image.getId() + "/" + image.getTitle();
+
+        }
+
+
     }
 
 
@@ -199,13 +215,19 @@ public class ImageController {
     //Converts the list of all tags to a single string containing all the tags separated by a comma
     //Returns the string
     private String convertTagsToString(List<Tag> tags) {
+        int tagSize = tags.size();
+        //If tag is empty then we will get out of bound exception.
+//        if(tagSize==0){
+//            tagSize=2;
+//        }
+
         StringBuilder tagString = new StringBuilder();
 
-        for (int i = 0; i <= tags.size() - 2; i++) {
+        for (int i = 0; i <= tagSize - 2; i++) {
             tagString.append(tags.get(i).getName()).append(",");
         }
 
-        Tag lastTag = tags.get(tags.size() - 1);
+        Tag lastTag = tags.get(tagSize - 1);
         tagString.append(lastTag.getName());
 
         return tagString.toString();
