@@ -3,6 +3,8 @@ package ImageHoster.model;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.*;
+
 import java.util.Date;
 
 @Entity
@@ -10,17 +12,23 @@ import java.util.Date;
 @Table(name = "comments")
 
 public class Comment {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+
     @Column(name = "id")
     private Integer id;
+
     @Column(columnDefinition = "TEXT")
     private String text;
+
     @Column(name = "createdDate")
     private Date createdDate;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "image_id")
     private Image image;
@@ -64,7 +72,6 @@ public class Comment {
     public void setImage(Image image) {
         this.image = image;
     }
-
 
 
 }
