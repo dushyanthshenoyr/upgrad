@@ -32,9 +32,9 @@ public class CommentController {
     private ImageService imageService;
 
 
-    @RequestMapping(value = "/images/{imageId}/comments", method = RequestMethod.POST)
+    @RequestMapping(value = "/images/{imageId}/{imageTitle}/comments", method = RequestMethod.POST)
 
-    public String addComment(@RequestParam("comment") String commentString, @PathVariable("imageId") Integer imageId,Model model, HttpSession session) {
+    public String addComment(@RequestParam("comment") String commentString,@PathVariable("imageTitle") String imageTitle, @PathVariable("imageId") Integer imageId,Model model, HttpSession session) {
         Image image = imageService.getImage(imageId);
 
 
@@ -47,7 +47,7 @@ public class CommentController {
         comment.setCreatedDate(new Date());
         commentService.newComment(comment);
 
-        return "redirect:/images/";
+        return "redirect:/images/" + image.getId() +"/"+ image.getTitle();
 
     }
 
